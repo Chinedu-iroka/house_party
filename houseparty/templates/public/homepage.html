@@ -1,13 +1,144 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}HouseParty — Upcoming Events{% endblock %}
 
 {% block content %}
-<div style="padding: 3rem 2rem; text-align: center;">
-  <div class="section-header" style="justify-content: center;">
+
+<div class="hero-section">
+  <div class="hero-image-zone">
+    <div class="hero-image-placeholder">
+      <p class="hero-image-label">Hero image — cinematic, two silhouettes, low-key lighting</p>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-text">
+      <div class="hero-brand-line">
+        <span class="divider-line"></span>
+        <span class="gold-label">Welcome</span>
+      </div>
+      <h1 class="hero-title">Be an adult</h1>
+      <h1 class="hero-title gold">for the first time.</h1>
+      <p class="hero-subtitle">Private. Curated. A space where desire meets discretion.</p>
+    </div>
+  </div>
+
+  <div class="mood-strip">
+    <div class="mood-image-zone">
+      <p class="mood-label">The Vibe</p>
+    </div>
+    <div class="mood-image-zone">
+      <p class="mood-label">The Mood</p>
+    </div>
+    <div class="mood-image-zone">
+      <p class="mood-label">The Touch</p>
+    </div>
+  </div>
+
+  <div class="tagline-break">
+    <p class="tagline-eyebrow">You were made for this</p>
+    <p class="tagline-quote">"Leave your day behind. Tonight you answer to no one."</p>
+  </div>
+</div>
+
+<div class="events-section">
+  <div class="section-header">
     <span class="section-label">Upcoming Events</span>
   </div>
-  <h1 style="font-size: 32px; font-weight: 500; margin-top: 1rem;">Find your next experience</h1>
-  <p class="text-muted" style="margin-top: 0.5rem;">Events coming in Sprint 3.</p>
+
+  {% if events %}
+    {% for item in events %}
+    <div class="event-card {% if item.is_sold_out %}event-card--sold-out{% endif %}">
+
+      <div class="event-card-image">
+        <div class="event-image-placeholder"></div>
+        <div class="event-card-image-overlay"></div>
+      </div>
+
+      <div class="event-card-body">
+        <div class="event-card-top">
+          <div>
+            <span class="event-card-eyebrow">
+              {% if forloop.first %}Featured{% else %}Upcoming{% endif %}
+            </span>
+            <h2 class="event-card-title">{{ item.event.name }}</h2>
+          </div>
+          {% if item.is_sold_out %}
+            <span class="badge badge-sold-out">Sold Out</span>
+          {% else %}
+            <span class="badge badge-gold">Open</span>
+          {% endif %}
+        </div>
+
+        <div class="event-card-meta">
+          <div class="event-meta-item">
+            <span class="event-meta-label">Date</span>
+            <span class="event-meta-value">{{ item.event.date|date:"D d M Y" }}</span>
+          </div>
+          <div class="event-meta-item">
+            <span class="event-meta-label">Zone</span>
+            <span class="event-meta-value">{{ item.event.zone }}</span>
+          </div>
+          <div class="event-meta-item">
+            <span class="event-meta-label">Time</span>
+            <span class="event-meta-value">{{ item.event.start_time|time:"g:i A" }}</span>
+          </div>
+        </div>
+
+        <div class="tier-grid">
+          {% for tier_data in item.tiers %}
+          <div class="tier-card {% if tier_data.tier.name == 'VIP' %}tier-card--vip{% endif %}">
+            <span class="tier-name {% if tier_data.tier.name == 'VIP' %}text-gold{% endif %}">
+              {{ tier_data.tier.name }}
+            </span>
+            <span class="tier-price">₦{{ tier_data.tier.price|floatformat:0 }}</span>
+            <span class="tier-inclusions">{{ tier_data.tier.inclusions }}</span>
+            <div class="tier-slots">
+              <div class="slot-bar">
+                <div class="slot-bar-fill" style="width: {{ tier_data.fill_percentage }}%"></div>
+              </div>
+              <span class="slot-count
+                {% if tier_data.is_sold_out %}text-muted
+                {% else %}text-gold{% endif %}"
+                id="slot-count-{{ tier_data.tier.id }}">
+                {% if tier_data.is_sold_out %}
+                  Sold out
+                {% else %}
+                  {{ tier_data.available }} left
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <a href="{% url 'event_detail' item.event.id %}"
+           class="btn {% if item.is_sold_out %}btn-outline{% else %}btn-gold{% endif %}">
+          {% if item.is_sold_out %}View Event{% else %}View & Register{% endif %}
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="no-events">
+      <p class="text-muted">No events available at the moment. Check back soon.</p>
+    </div>
+  {% endif %}
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const tierIds = [
+    {% for item in events %}
+      {% for tier_data in item.tiers %}
+        "{{ tier_data.tier.id }}",
+      {% endfor %}
+    {% endfor %}
+  ];
+  if (typeof initSlotPolling === 'function') {
+    initSlotPolling(tierIds);
+  }
+</script>
 {% endblock %}

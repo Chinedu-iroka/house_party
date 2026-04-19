@@ -4,6 +4,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+handler404 = 'events.views.custom_404'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

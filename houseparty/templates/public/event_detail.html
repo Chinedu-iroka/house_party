@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ event.name }} — HouseParty{% endblock %}
+
+{% block content %}
+
+<div class="detail-hero">
+  <div class="detail-image-placeholder">
+    <p class="hero-image-label">Event theme image</p>
+  </div>
+  <div class="detail-hero-overlay"></div>
+  <div class="detail-hero-text">
+    <a href="{% url 'homepage' %}" class="back-link">← Back to events</a>
+    <h1 class="detail-title">{{ event.name }}</h1>
+    <div class="event-card-meta" style="margin-top:1rem;">
+      <div class="event-meta-item">
+        <span class="event-meta-label">Date</span>
+        <span class="event-meta-value">{{ event.date|date:"l, d F Y" }}</span>
+      </div>
+      <div class="event-meta-item">
+        <span class="event-meta-label">Time</span>
+        <span class="event-meta-value">{{ event.start_time|time:"g:i A" }}</span>
+      </div>
+      <div class="event-meta-item">
+        <span class="event-meta-label">Zone</span>
+        <span class="event-meta-value">{{ event.zone }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-body">
+
+  <div class="detail-description">
+    <div class="section-header">
+      <span class="section-label">About this event</span>
+    </div>
+    <p class="detail-desc-text">{{ event.description }}</p>
+  </div>
+
+  <div class="detail-tiers">
+    <div class="section-header">
+      <span class="section-label">Select your ticket</span>
+    </div>
+
+    {% for tier_data in tiers %}
+    <div class="detail-tier-card {% if tier_data.tier.name == 'VIP' %}detail-tier-card--vip{% endif %}">
+      <div class="detail-tier-top">
+        <div>
+          <p class="detail-tier-name {% if tier_data.tier.name == 'VIP' %}text-gold{% endif %}">
+            {{ tier_data.tier.name }}
+          </p>
+          <p class="detail-tier-inclusions">{{ tier_data.tier.inclusions }}</p>
+        </div>
+        <p class="detail-tier-price">₦{{ tier_data.tier.price|floatformat:0 }}</p>
+      </div>
+
+      <div class="detail-tier-slots">
+        <div class="slot-bar" style="width:100%;">
+          <div class="slot-bar-fill" style="width: {{ tier_data.fill_percentage }}%"></div>
+        </div>
+        <span class="slot-count {% if tier_data.is_sold_out %}text-muted{% else %}text-gold{% endif %}"
+              id="slot-count-{{ tier_data.tier.id }}">
+          {% if tier_data.is_sold_out %}
+            Sold out
+          {% else %}
+            {{ tier_data.available }} of {{ tier_data.tier.total_slots }} slots remaining
+          {% endif %}
+        </span>
+      </div>
+
+      {% if tier_data.is_sold_out %}
+        <button class="btn btn-outline" disabled style="opacity:0.4; cursor:not-allowed;">
+          Sold Out
+        </button>
+      {% else %}
+        <a href="#" class="btn btn-gold">Register for {{ tier_data.tier.name }}</a>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <div class="detail-tc">
+    <div class="section-header">
+      <span class="section-label">Terms & Conditions</span>
+    </div>
+    <div class="tc-box">
+      <p class="tc-text">
+        By registering for this event you confirm that you are 18 years of age or older,
+        that you agree to participate responsibly, and that you understand the private nature
+        of this gathering. Full Terms & Conditions will be provided during registration.
+        All sales are final — no refunds. In the event of cancellation or postponement,
+        your registration will be transferred to the next available event.
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const tierIds = [
+    {% for tier_data in tiers %}
+      "{{ tier_data.tier.id }}",
+    {% endfor %}
+  ];
+  if (typeof initSlotPolling === 'function') {
+    initSlotPolling(tierIds);
+  }
+</script>
+{% endblock %}

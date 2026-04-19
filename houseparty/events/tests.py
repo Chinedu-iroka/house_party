@@ -1,7 +1,9 @@
-from django.test import TestCase
+import uuid
+from django.test import TestCase, Client
 from django.utils import timezone
 from datetime import date, time
 from .models import Event, TicketTier
+from django.urls import reverse
 
 
 class EventModelTest(TestCase):
@@ -104,8 +106,6 @@ class TicketTierModelTest(TestCase):
         self.assertIn("Euphoria Night", str(self.tier))
 
 
-from django.test import TestCase, Client
-from django.urls import reverse
 
 
 class AgeGateViewTest(TestCase):
@@ -149,3 +149,190 @@ class AgeGateViewTest(TestCase):
         response = self.client.get(reverse('age_exit'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'public/age_exit.html')
+
+
+
+
+
+
+class HomepageViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        session = self.client.session
+        session['age_verified'] = True
+        session.save()
+
+        self.event = Event.objects.create(
+            name="Euphoria Night",
+            description="A night to remember",
+            date=date(2025, 12, 31),
+            start_time=time(21, 0),
+            zone="Lekki",
+            full_address="12 Private Close, Lekki Phase 1",
+            status=Event.Status.PUBLISHED,
+        )
+        self.tier = TicketTier.objects.create(
+            event=self.event,
+            name="Regular",
+            price=70000,
+            inclusions="Entry + 1 Martell",
+            total_slots=30,
+        )
+
+    def test_homepage_returns_200(self):
+        response = self.client.get(reverse('homepage'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_homepage_uses_correct_template(self):
+        response = self.client.get(reverse('homepage'))
+        self.assertTemplateUsed(response, 'public/homepage.html')
+
+    def test_homepage_shows_published_events(self):
+        response = self.client.get(reverse('homepage'))
+        self.assertEqual(len(response.context['events']), 1)
+        self.assertEqual(response.context['events'][0]['event'].name, "Euphoria Night")
+
+    def test_homepage_does_not_show_draft_events(self):
+        Event.objects.create(
+            name="Draft Event",
+            description="Not visible",
+            date=date(2025, 12, 31),
+            start_time=time(21, 0),
+            zone="VI",
+            full_address="Private",
+            status=Event.Status.DRAFT,
+        )
+        response = self.client.get(reverse('homepage'))
+        self.assertEqual(len(response.context['events']), 1)
+
+    def test_homepage_slot_data_attached(self):
+        response = self.client.get(reverse('homepage'))
+        event_data = response.context['events'][0]
+        self.assertIn('tiers', event_data)
+        self.assertEqual(event_data['tiers'][0]['available'], 30)
+        self.assertFalse(event_data['tiers'][0]['is_sold_out'])
+
+    def test_homepage_marks_sold_out_correctly(self):
+        self.tier.confirmed_slots = 30
+        self.tier.save()
+        response = self.client.get(reverse('homepage'))
+        event_data = response.context['events'][0]
+        self.assertTrue(event_data['is_sold_out'])
+
+
+class EventDetailViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        session = self.client.session
+        session['age_verified'] = True
+        session.save()
+
+        self.event = Event.objects.create(
+            name="Euphoria Night",
+            description="A night to remember",
+            date=date(2025, 12, 31),
+            start_time=time(21, 0),
+            zone="Lekki",
+            full_address="12 Private Close, Lekki Phase 1",
+            status=Event.Status.PUBLISHED,
+        )
+        self.tier = TicketTier.objects.create(
+            event=self.event,
+            name="Regular",
+            price=70000,
+            inclusions="Entry + 1 Martell",
+            total_slots=30,
+        )
+
+    def test_event_detail_returns_200(self):
+        response = self.client.get(reverse('event_detail', args=[self.event.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_event_detail_uses_correct_template(self):
+        response = self.client.get(reverse('event_detail', args=[self.event.id]))
+        self.assertTemplateUsed(response, 'public/event_detail.html')
+
+    def test_event_detail_shows_correct_event(self):
+        response = self.client.get(reverse('event_detail', args=[self.event.id]))
+        self.assertEqual(response.context['event'].name, "Euphoria Night")
+
+    def test_event_detail_full_address_not_in_context(self):
+        response = self.client.get(reverse('event_detail', args=[self.event.id]))
+        content = response.content.decode()
+        self.assertNotIn("12 Private Close", content)
+
+    def test_event_detail_404_for_draft_event(self):
+        draft = Event.objects.create(
+            name="Draft Event",
+            description="Not visible",
+            date=date(2025, 12, 31),
+            start_time=time(21, 0),
+            zone="VI",
+            full_address="Private",
+            status=Event.Status.DRAFT,
+        )
+        response = self.client.get(reverse('event_detail', args=[draft.id]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_event_detail_404_for_invalid_uuid(self):
+        fake_id = uuid.uuid4()
+        response = self.client.get(reverse('event_detail', args=[fake_id]))
+        self.assertEqual(response.status_code, 404)
+
+
+class SlotCountAPITest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.event = Event.objects.create(
+            name="Euphoria Night",
+            description="A night to remember",
+            date=date(2025, 12, 31),
+            start_time=time(21, 0),
+            zone="Lekki",
+            full_address="12 Private Close, Lekki Phase 1",
+            status=Event.Status.PUBLISHED,
+        )
+        self.tier = TicketTier.objects.create(
+            event=self.event,
+            name="Regular",
+            price=70000,
+            inclusions="Entry + 1 Martell",
+            total_slots=30,
+            reserved_slots=5,
+            confirmed_slots=10,
+        )
+
+    def test_slot_api_returns_200(self):
+        response = self.client.get(reverse('slot_count_api', args=[self.tier.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_slot_api_returns_correct_available(self):
+        response = self.client.get(reverse('slot_count_api', args=[self.tier.id]))
+        data = response.json()
+        self.assertEqual(data['available'], 15)
+
+    def test_slot_api_returns_correct_total(self):
+        response = self.client.get(reverse('slot_count_api', args=[self.tier.id]))
+        data = response.json()
+        self.assertEqual(data['total'], 30)
+
+    def test_slot_api_sold_out_false(self):
+        response = self.client.get(reverse('slot_count_api', args=[self.tier.id]))
+        data = response.json()
+        self.assertFalse(data['sold_out'])
+
+    def test_slot_api_sold_out_true(self):
+        self.tier.confirmed_slots = 30
+        self.tier.reserved_slots = 0
+        self.tier.save()
+        response = self.client.get(reverse('slot_count_api', args=[self.tier.id]))
+        data = response.json()
+        self.assertTrue(data['sold_out'])
+
+    def test_slot_api_404_for_invalid_tier(self):
+        fake_id = uuid.uuid4()
+        response = self.client.get(reverse('slot_count_api', args=[fake_id]))
+        self.assertEqual(response.status_code, 404)
