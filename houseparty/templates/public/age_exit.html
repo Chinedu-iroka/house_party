@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}HouseParty — Access Restricted{% endblock %}
+
+{% block full_page %}
+<div class="age-gate-wrapper">
+
+  <div class="age-exit-icon">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M15 9l-6 6M9 9l6 6"/>
+    </svg>
+  </div>
+
+  <h1 class="age-exit-title">Access Restricted</h1>
+  <p class="age-exit-text">This platform is strictly for adults aged 18 and above. You are not permitted to access this content.</p>
+  <p class="age-gate-footer">Private &nbsp;·&nbsp; Exclusive &nbsp;·&nbsp; Adult Only</p>
+
+</div>
+{% endblock %}

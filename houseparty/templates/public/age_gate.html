@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}HouseParty — Age Verification{% endblock %}
+
+{% block full_page %}
+<div class="age-gate-wrapper">
+
+  <div class="age-gate-brand">
+    <span class="divider-line"></span>
+    <span class="gold-label">Private Events</span>
+    <span class="divider-line"></span>
+  </div>
+
+  <div class="age-gate-hero">
+    <h1 class="age-gate-title">Be an adult</h1>
+    <h1 class="age-gate-title gold">for the first time.</h1>
+    <p class="age-gate-subtitle">This platform contains content intended for adults only. Please confirm your age to continue.</p>
+  </div>
+
+  <div class="age-gate-card">
+
+    <div class="age-gate-card-header">
+      <div class="age-gate-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2C9.24 2 7 4.24 7 7s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/>
+          <path d="M12 14c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="age-gate-card-title">Age Verification</p>
+        <p class="age-gate-card-sub">Required to access this platform</p>
+      </div>
+    </div>
+
+    <div class="age-gate-confirm-box">
+      <p class="age-gate-confirm-label">Confirm your age</p>
+      <p class="age-gate-confirm-text">I am 18 years or older</p>
+    </div>
+
+    <form method="POST" action="{% url 'age_gate' %}">
+      {% csrf_token %}
+      <div class="age-gate-actions">
+        <button type="submit" name="age_confirm" value="yes" class="btn btn-gold">
+          Yes, I am 18 or older — Enter
+        </button>
+        <button type="submit" name="age_confirm" value="no" class="btn btn-outline">
+          No, I am under 18 — Exit
+        </button>
+      </div>
+    </form>
+
+    <p class="age-gate-legal">By entering, you confirm you are of legal age and agree to our Terms & Conditions. This platform is strictly for adults.</p>
+
+  </div>
+
+  <p class="age-gate-footer">Private &nbsp;·&nbsp; Exclusive &nbsp;·&nbsp; Adult</p>
+
+</div>
+{% endblock %}
