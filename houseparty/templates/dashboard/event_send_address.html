@@ -1,0 +1,37 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Send Address — Admin{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+  <a href="{% url 'admin_event_detail' event.id %}" class="back-link">← Back</a>
+  <h1 class="dash-title" style="margin-top:0.5rem;">Send Address Now</h1>
+</div>
+
+<div class="dash-confirm-card">
+  {% if event.address_sent %}
+  <div class="form-error-banner" style="border-color:var(--gold); color:var(--gold); background:rgba(184,150,46,0.1);">
+    ⚠️ The address has already been sent for this event. Sending again will re-send to all confirmed registrants.
+  </div>
+  {% endif %}
+
+  <p class="text-muted" style="margin:1.5rem 0; line-height:1.7;">
+    This will immediately send the full event address to all confirmed registrants of
+    <strong style="color:var(--text-primary);">{{ event.name }}</strong>
+    via email and SMS.
+  </p>
+
+  <form method="POST" action="{% url 'admin_event_send_address' event.id %}">
+    {% csrf_token %}
+    <div style="display:flex; gap:12px;">
+      <button type="submit" class="btn btn-gold" style="width:auto; padding:12px 24px;">
+        Send Address Now
+      </button>
+      <a href="{% url 'admin_event_detail' event.id %}"
+         class="btn btn-outline" style="width:auto; padding:12px 24px;">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

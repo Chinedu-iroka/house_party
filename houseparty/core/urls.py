@@ -12,4 +12,5 @@ urlpatterns = [
     path('test/', test_base),
     path('', include('events.urls')),
     path('', include('registrations.urls')),
+    path('', include('dashboard.urls')),
 ]

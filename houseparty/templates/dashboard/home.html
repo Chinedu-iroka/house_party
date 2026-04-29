@@ -1,0 +1,57 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard — HouseParty Admin{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+  <div>
+    <p class="gold-label">Overview</p>
+    <h1 class="dash-title">All Events</h1>
+  </div>
+  <a href="{% url 'admin_event_create' %}" class="btn btn-gold" style="width:auto; padding:10px 20px;">
+    + New Event
+  </a>
+</div>
+
+{% if event_stats %}
+  {% for item in event_stats %}
+  <div class="dash-event-card">
+    <div class="dash-event-top">
+      <div>
+        <span class="dash-event-status dash-status-{{ item.event.status|lower }}">
+          {{ item.event.status }}
+        </span>
+        <h2 class="dash-event-name">{{ item.event.name }}</h2>
+        <p class="dash-event-meta">
+          {{ item.event.date|date:"D d M Y" }} &nbsp;·&nbsp;
+          {{ item.event.start_time|time:"g:i A" }} &nbsp;·&nbsp;
+          {{ item.event.zone }}
+        </p>
+      </div>
+      <div class="dash-event-stats">
+        <div class="dash-stat">
+          <span class="dash-stat-val">{{ item.confirmed_count }}</span>
+          <span class="dash-stat-label">Registered</span>
+        </div>
+        <div class="dash-stat">
+          <span class="dash-stat-val text-gold">₦{{ item.revenue|floatformat:0 }}</span>
+          <span class="dash-stat-label">Revenue</span>
+        </div>
+      </div>
+    </div>
+    <div class="dash-event-actions">
+      <a href="{% url 'admin_event_detail' item.event.id %}" class="dash-action-btn">View</a>
+      <a href="{% url 'admin_event_edit' item.event.id %}" class="dash-action-btn">Edit</a>
+      <a href="{% url 'admin_event_export' item.event.id %}" class="dash-action-btn">Export CSV</a>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="dash-empty">
+    <p class="text-muted">No events yet.</p>
+    <a href="{% url 'admin_event_create' %}" class="btn btn-gold" style="width:auto; padding:10px 20px; margin-top:1rem;">
+      Create your first event
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

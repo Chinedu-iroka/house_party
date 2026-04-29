@@ -1,0 +1,115 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{{ event.name }} — Admin{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+  <div>
+    <a href="{% url 'admin_dashboard_home' %}" class="back-link">← Back to dashboard</a>
+    <h1 class="dash-title" style="margin-top:0.5rem;">{{ event.name }}</h1>
+    <p class="dash-event-meta">
+      {{ event.date|date:"D d M Y" }} &nbsp;·&nbsp;
+      {{ event.start_time|time:"g:i A" }} &nbsp;·&nbsp;
+      {{ event.zone }}
+    </p>
+  </div>
+  <span class="dash-event-status dash-status-{{ event.status|lower }}">{{ event.status }}</span>
+</div>
+
+<!-- Stats row -->
+<div class="dash-stats-row">
+  <div class="dash-stat-card">
+    <span class="dash-stat-big">{{ confirmed_count }}</span>
+    <span class="dash-stat-label">Confirmed</span>
+  </div>
+  <div class="dash-stat-card">
+    <span class="dash-stat-big text-gold">₦{{ revenue|floatformat:0 }}</span>
+    <span class="dash-stat-label">Total Revenue</span>
+  </div>
+</div>
+
+<!-- Tier stats -->
+<div class="dash-section">
+  <p class="dash-section-label">Ticket Tiers</p>
+  {% for ts in tier_stats %}
+  <div class="dash-tier-row">
+    <span class="dash-tier-name">{{ ts.tier.name }}</span>
+    <span class="text-muted">{{ ts.confirmed }} confirmed</span>
+    <div class="slot-bar" style="width:120px;">
+      <div class="slot-bar-fill" style="width:{{ ts.tier.fill_percentage }}%;"></div>
+    </div>
+    <span class="slot-count text-gold">{{ ts.available }} left</span>
+    <span class="text-gold">₦{{ ts.revenue|floatformat:0 }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Actions -->
+<div class="dash-section">
+  <p class="dash-section-label">Actions</p>
+  <div class="dash-action-group">
+
+    <!-- Status toggle -->
+    <form method="POST" action="{% url 'admin_event_toggle_status' event.id %}" style="display:inline;">
+      {% csrf_token %}
+      {% if event.status == 'DRAFT' %}
+        <input type="hidden" name="status" value="PUBLISHED">
+        <button type="submit" class="btn btn-gold" style="width:auto; padding:10px 18px;">Publish</button>
+      {% elif event.status == 'PUBLISHED' %}
+        <input type="hidden" name="status" value="CLOSED">
+        <button type="submit" class="btn btn-outline" style="width:auto; padding:10px 18px;">Close Registration</button>
+      {% elif event.status == 'CLOSED' %}
+        <input type="hidden" name="status" value="PUBLISHED">
+        <button type="submit" class="btn btn-gold" style="width:auto; padding:10px 18px;">Re-open</button>
+      {% endif %}
+    </form>
+
+    <a href="{% url 'admin_event_edit' event.id %}" class="btn btn-outline" style="width:auto; padding:10px 18px;">Edit Event</a>
+    <a href="{% url 'admin_event_export' event.id %}" class="btn btn-outline" style="width:auto; padding:10px 18px;">Export CSV</a>
+    <a href="{% url 'admin_event_send_address' event.id %}" class="btn btn-outline" style="width:auto; padding:10px 18px;">Send Address</a>
+    <a href="{% url 'admin_event_cancel' event.id %}" class="btn btn-outline" style="width:auto; padding:10px 18px; border-color:#c0392b; color:#c0392b;">Cancel Event</a>
+    <a href="{% url 'admin_event_postpone' event.id %}" class="btn btn-outline" style="width:auto; padding:10px 18px;">Postpone</a>
+  </div>
+</div>
+
+<!-- Registrant list -->
+<div class="dash-section">
+  <p class="dash-section-label">Registrants ({{ registrations.count }})</p>
+  {% if registrations %}
+  <div class="dash-table-wrap">
+    <table class="dash-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Tier</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Registered</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reg in registrations %}
+        <tr>
+          <td>{{ reg.full_name }}</td>
+          <td>{{ reg.email }}</td>
+          <td>{{ reg.phone }}</td>
+          <td>{{ reg.tier.name }}</td>
+          <td>
+            <span class="dash-reg-status dash-reg-{{ reg.status|lower }}">
+              {{ reg.status }}
+            </span>
+          </td>
+          <td>{{ reg.payment_status }}</td>
+          <td>{{ reg.registered_at|date:"d M Y"|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted">No registrations yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

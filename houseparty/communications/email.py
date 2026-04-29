@@ -73,3 +73,37 @@ HouseParty
     except Exception as e:
         logger.error(f"Failed to send address email: {e}")
         raise
+
+
+
+def send_transfer_email(registration, original_event, next_event):
+    try:
+        subject = f"Your registration has been moved — {next_event.name}"
+        body = f"""Hi {registration.full_name},
+
+We want to let you know that {original_event.name} has been cancelled or postponed.
+
+Your registration has been automatically transferred to:
+
+Event: {next_event.name}
+Date: {next_event.date.strftime('%A, %d %B %Y')}
+Time: {next_event.start_time.strftime('%I:%M %p')}
+Zone: {next_event.zone}
+
+Your payment has been carried over — no action is needed from you.
+You will receive the full address 24 hours before the new event date.
+
+Thank you for your understanding,
+HouseParty
+"""
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[registration.email],
+        )
+        email.send()
+        logger.info(f"Transfer email sent to {registration.email}")
+    except Exception as e:
+        logger.error(f"Failed to send transfer email: {e}")
+        raise

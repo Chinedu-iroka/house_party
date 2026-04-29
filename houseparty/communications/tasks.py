@@ -138,3 +138,30 @@ def schedule_address_reveal(registration):
             eta=reveal_dt,
         )
         logger.info(f"Address reveal scheduled for {reveal_dt} for event {event.name}")
+
+
+
+@shared_task(bind=True, max_retries=3)
+def notify_transfer_task(self, original_event_id, next_event_id):
+    try:
+        from events.models import Event
+        from registrations.models import Registration
+        from .email import send_transfer_email
+        from .sms import send_transfer_sms
+
+        original_event = Event.objects.get(id=original_event_id)
+        next_event = Event.objects.get(id=next_event_id)
+
+        transferred = Registration.objects.filter(
+            event=original_event,
+            status=Registration.Status.TRANSFERRED,
+        )
+
+        for registration in transferred:
+            send_transfer_email(registration, original_event, next_event)
+            send_transfer_sms(registration, next_event)
+            logger.info(f"Transfer notification sent to {registration.email}")
+
+    except Exception as exc:
+        logger.error(f"notify_transfer_task failed: {exc}")
+        raise self.retry(exc=exc, countdown=60)

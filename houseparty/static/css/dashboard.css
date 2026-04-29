@@ -1,0 +1,354 @@
+/* ── Dashboard Layout ─────────────────────────────── */
+.dashboard-body {
+  display: flex;
+  min-height: 100vh;
+  background: #080808;
+}
+
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: #0d0d0d;
+  border-right: 0.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.sidebar-brand {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-admin-label {
+  font-size: 10px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-left: auto;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 1.25rem;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.sidebar-link:hover {
+  color: var(--gold);
+  background: rgba(184,150,46,0.05);
+}
+
+.sidebar-footer {
+  padding: 1.25rem;
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-user {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.sidebar-logout {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.sidebar-logout:hover {
+  color: #c0392b;
+}
+
+.dashboard-main {
+  margin-left: 220px;
+  flex: 1;
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  padding: 2rem;
+  max-width: 960px;
+}
+
+/* ── Dashboard Header ────────────────────────────── */
+.dash-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.dash-title {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ── Event Card ──────────────────────────────────── */
+.dash-event-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.dash-event-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dash-event-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0.25rem 0 0;
+}
+
+.dash-event-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
+.dash-event-stats {
+  display: flex;
+  gap: 1.5rem;
+  text-align: right;
+}
+
+.dash-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-stat-val {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.dash-stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.dash-event-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dash-action-btn {
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.dash-action-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* ── Status Badges ───────────────────────────────── */
+.dash-event-status {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.dash-status-published { background: rgba(26,107,60,0.2); color: #2ecc71; }
+.dash-status-draft { background: rgba(136,136,136,0.15); color: #888; }
+.dash-status-closed { background: rgba(180,83,9,0.15); color: #f39c12; }
+.dash-status-cancelled { background: rgba(192,57,43,0.15); color: #e74c3c; }
+.dash-status-postponed { background: rgba(26,58,107,0.2); color: #5dade2; }
+
+.dash-reg-status {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.dash-reg-confirmed { background: rgba(26,107,60,0.2); color: #2ecc71; }
+.dash-reg-pending { background: rgba(180,83,9,0.15); color: #f39c12; }
+.dash-reg-cancelled { background: rgba(192,57,43,0.15); color: #e74c3c; }
+.dash-reg-transferred { background: rgba(26,58,107,0.2); color: #5dade2; }
+
+/* ── Stats Row ───────────────────────────────────── */
+.dash-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dash-stat-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dash-stat-big {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── Section ─────────────────────────────────────── */
+.dash-section {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.dash-section-label {
+  font-size: 11px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 1rem;
+}
+
+.dash-tier-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.dash-tier-row:last-child {
+  border-bottom: none;
+}
+
+.dash-tier-name {
+  font-size: 14px;
+  color: var(--text-primary);
+  min-width: 80px;
+}
+
+.dash-action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ── Table ───────────────────────────────────────── */
+.dash-table-wrap {
+  overflow-x: auto;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dash-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.dash-table td {
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.dash-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Form ────────────────────────────────────────── */
+.dash-form {
+  max-width: 640px;
+}
+
+.dash-form-section {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.dash-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tier-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 2fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select.form-control {
+  appearance: none;
+  cursor: pointer;
+}
+
+/* ── Confirm Card ────────────────────────────────── */
+.dash-confirm-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  max-width: 560px;
+}
+
+/* ── Empty State ─────────────────────────────────── */
+.dash-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}

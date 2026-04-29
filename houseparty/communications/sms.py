@@ -48,3 +48,13 @@ def send_address_sms(registration, full_address):
         f"Time: {registration.event.start_time.strftime('%I:%M %p')}"
     )
     send_sms(registration.phone, message)
+
+
+
+def send_transfer_sms(registration, next_event):
+    message = (
+        f"Update: Your HouseParty registration has been moved to "
+        f"{next_event.name} on {next_event.date.strftime('%d %b %Y')}. "
+        f"Check your email for details."
+    )
+    send_sms(registration.phone, message)

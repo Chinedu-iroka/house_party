@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}HouseParty Admin{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dashboard-body">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">HouseParty</span>
+      <span class="sidebar-admin-label">Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="{% url 'admin_dashboard_home' %}" class="sidebar-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="{% url 'admin_event_create' %}" class="sidebar-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        New Event
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="sidebar-user">{{ request.user.username }}</span>
+      <a href="{% url 'admin_logout' %}" class="sidebar-logout">Logout</a>
+    </div>
+  </aside>
+
+  <main class="dashboard-main">
+    <div class="dashboard-content">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Login — HouseParty{% endblock %}
+
+{% block full_page %}
+<div class="age-gate-wrapper">
+  <div class="age-gate-hero">
+    <div class="age-gate-brand">
+      <span class="divider-line"></span>
+      <span class="gold-label">Admin Access</span>
+      <span class="divider-line"></span>
+    </div>
+    <h1 class="age-gate-title">HouseParty</h1>
+    <h1 class="age-gate-title gold">Dashboard</h1>
+  </div>
+
+  <div class="age-gate-card" style="max-width:380px;">
+    {% if error %}
+    <div class="form-error-banner" style="margin-bottom:1.5rem;">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'admin_login' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Admin username" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="btn btn-gold" style="margin-top:0.5rem;">Sign In</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
