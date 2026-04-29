@@ -356,6 +356,7 @@ def event_send_address(request, event_id):
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _transfer_registrants(from_event, to_event, request):
+    import uuid
     confirmed = Registration.objects.filter(
         event=from_event,
         status=Registration.Status.CONFIRMED,
@@ -367,6 +368,8 @@ def _transfer_registrants(from_event, to_event, request):
             matching_tier = to_event.tiers.first()
 
         if matching_tier:
+            # Generate a new unique reference for the transferred registration
+            new_reference = f"HP-TRANSFER-{uuid.uuid4().hex[:10].upper()}"
             Registration.objects.create(
                 event=to_event,
                 tier=matching_tier,
@@ -376,7 +379,7 @@ def _transfer_registrants(from_event, to_event, request):
                 status=Registration.Status.CONFIRMED,
                 payment_status=Registration.PaymentStatus.PAID,
                 amount_paid=reg.amount_paid,
-                payment_reference=reg.payment_reference,
+                payment_reference=new_reference,
             )
 
         reg.status = Registration.Status.TRANSFERRED
