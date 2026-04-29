@@ -7,4 +7,5 @@ urlpatterns = [
     path('registration/success/<uuid:registration_id>/', views.registration_success, name='registration_success'),
     path('registration/failed/', views.registration_failed, name='registration_failed'),
     path('registration/release/<uuid:registration_id>/', views.release_slot_api, name='release_slot_api'),
+    path('webhook/paystack/', views.paystack_webhook, name='paystack_webhook'),
 ]
