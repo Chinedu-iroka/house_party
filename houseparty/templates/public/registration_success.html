@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Registration Confirmed — {{ registration.event.name }}{% endblock %}
+
+{% block content %}
+<div style="padding: 5rem 2rem; text-align: center; max-width: 480px; margin: 0 auto;">
+  <div style="width:64px; height:64px; border-radius:50%; border:1.5px solid var(--gold); display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5">
+      <path d="M20 6L9 17l-5-5"/>
+    </svg>
+  </div>
+  <p class="gold-label" style="margin-bottom:1rem;">Confirmed</p>
+  <h1 style="font-size:26px; font-weight:500; margin-bottom:0.75rem;">You're registered!</h1>
+  <p class="text-muted" style="margin-bottom:2rem; line-height:1.7;">
+    Your spot for <strong style="color:var(--text-primary);">{{ registration.event.name }}</strong>
+    has been confirmed. Check your email for your confirmation and invoice.
+    The full address will be sent 24 hours before the event.
+  </p>
+  <div class="summary-card" style="text-align:left; margin-bottom:2rem;">
+    <div class="summary-row">
+      <span class="summary-key">Name</span>
+      <span class="summary-val">{{ registration.full_name }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-key">Tier</span>
+      <span class="summary-val">{{ registration.tier.name }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-key">Date</span>
+      <span class="summary-val">{{ registration.event.date|date:"l, d F Y" }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-key">Zone</span>
+      <span class="summary-val">{{ registration.event.zone }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-key">Reference</span>
+      <span class="summary-val" style="font-size:12px; font-family:monospace;">
+        {{ registration.payment_reference }}
+      </span>
+    </div>
+  </div>
+  <a href="{% url 'homepage' %}" class="btn btn-outline"
+     style="display:inline-block; width:auto; padding:13px 32px;">
+    Back to Events
+  </a>
+</div>
+{% endblock %}

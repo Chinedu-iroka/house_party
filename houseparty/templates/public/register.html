@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Register — {{ event.name }}{% endblock %}
+
+{% block content %}
+<div class="register-page">
+
+  <div class="register-header">
+    <a href="{% url 'event_detail' event.id %}" class="back-link">← Back to event</a>
+    <div class="section-header" style="margin-top:1rem;">
+      <span class="section-label">Registration</span>
+    </div>
+    <h1 class="register-title">{{ event.name }}</h1>
+  </div>
+
+  <div class="register-layout">
+
+    <!-- Order summary -->
+    <div class="register-summary">
+      <div class="summary-card">
+        <p class="summary-label">Your selection</p>
+        <p class="summary-event">{{ event.name }}</p>
+        <div class="summary-divider"></div>
+        <div class="summary-row">
+          <span class="summary-key">Tier</span>
+          <span class="summary-val">{{ tier.name }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Inclusions</span>
+          <span class="summary-val">{{ tier.inclusions }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Date</span>
+          <span class="summary-val">{{ event.date|date:"d M Y" }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Zone</span>
+          <span class="summary-val">{{ event.zone }}</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row summary-total">
+          <span class="summary-key">Total</span>
+          <span class="summary-price text-gold">₦{{ tier.price|floatformat:0 }}</span>
+        </div>
+        <div class="summary-slots">
+          <div class="slot-bar" style="width:100%;">
+            <div class="slot-bar-fill" style="width:{{ tier.fill_percentage }}%;"></div>
+          </div>
+          <span class="slot-count text-gold">{{ tier.available_slots }} slots remaining</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration form -->
+    <div class="register-form-wrap">
+
+      {% if errors.general %}
+      <div class="form-error-banner">{{ errors.general }}</div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'register' event.id tier.id %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name</label>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            class="form-control {% if errors.full_name %}form-control--error{% endif %}"
+            placeholder="Your full name"
+            value="{{ form_data.full_name|default:'' }}"
+          />
+          {% if errors.full_name %}
+          <p class="form-error">{{ errors.full_name }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-control {% if errors.email %}form-control--error{% endif %}"
+            placeholder="you@example.com"
+            value="{{ form_data.email|default:'' }}"
+          />
+          {% if errors.email %}
+          <p class="form-error">{{ errors.email }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="form-control {% if errors.phone %}form-control--error{% endif %}"
+            placeholder="08012345678"
+            value="{{ form_data.phone|default:'' }}"
+          />
+          {% if errors.phone %}
+          <p class="form-error">{{ errors.phone }}</p>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="tc-checkbox">
+            <input type="checkbox" name="tc_agreed" value="yes"
+              {% if form_data.tc_agreed %}checked{% endif %} />
+            <span class="tc-checkbox-label">
+              I agree to the
+              <a href="#" class="text-gold">Terms & Conditions</a>
+              and confirm I am 18 or older.
+            </span>
+          </label>
+          {% if errors.tc_agreed %}
+          <p class="form-error">{{ errors.tc_agreed }}</p>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-gold">
+          Proceed to Payment — ₦{{ tier.price|floatformat:0 }}
+        </button>
+
+        <p class="register-note">
+          Your slot will be held for 10 minutes after proceeding.
+          Payment must be completed within this window.
+        </p>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

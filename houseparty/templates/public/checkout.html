@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout — {{ registration.event.name }}{% endblock %}
+
+{% block content %}
+<div style="padding: 3rem 2rem; max-width: 480px; margin: 0 auto; text-align:center;">
+
+  <div class="section-header" style="justify-content:center; margin-bottom:1.5rem;">
+    <span class="section-label">Completing Payment</span>
+  </div>
+
+  <div class="checkout-timer-card">
+    <p class="checkout-timer-label">Slot reserved for</p>
+    <p class="checkout-timer" id="countdown">10:00</p>
+    <p class="checkout-timer-sub">Complete your payment before time runs out</p>
+  </div>
+
+  <div class="summary-card" style="text-align:left; margin:1.5rem 0;">
+    <div class="summary-row">
+      <span class="summary-key">Event</span>
+      <span class="summary-val">{{ registration.event.name }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-key">Tier</span>
+      <span class="summary-val">{{ registration.tier.name }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-key">Name</span>
+      <span class="summary-val">{{ registration.full_name }}</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-row summary-total">
+      <span class="summary-key">Amount</span>
+      <span class="summary-price text-gold">₦{{ registration.tier.price|floatformat:0 }}</span>
+    </div>
+  </div>
+
+  <p class="text-muted" style="font-size:13px; line-height:1.7;">
+    If you were redirected here, your payment window is still active.
+    If the timer expires your slot will be released automatically.
+  </p>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const registrationId = "{{ registration.id }}";
+  const expiresAt = new Date("{{ registration.reservation_expires_at|date:'c' }}");
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = Math.max(0, Math.floor((expiresAt - now) / 1000));
+    const minutes = Math.floor(diff / 60);
+    const seconds = diff % 60;
+    const display = `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    document.getElementById('countdown').textContent = display;
+
+    if (diff <= 0) {
+      clearInterval(timer);
+      // Notify server to release slot
+      fetch(`/registration/release/${registrationId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+      });
+      document.getElementById('countdown').textContent = '00:00';
+      document.getElementById('countdown').style.color = 'var(--danger)';
+      setTimeout(() => {
+        window.location.href = '/registration/failed/';
+      }, 2000);
+    }
+  }
+
+  const timer = setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>
+{% endblock %}

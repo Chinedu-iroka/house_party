@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Failed — HouseParty{% endblock %}
+
+{% block content %}
+<div style="padding: 5rem 2rem; text-align: center; max-width: 480px; margin: 0 auto;">
+  <div style="width:64px; height:64px; border-radius:50%; border:1.5px solid #c0392b; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="1.5">
+      <path d="M15 9l-6 6M9 9l6 6"/>
+    </svg>
+  </div>
+  <p style="font-size:11px; letter-spacing:3px; color:#c0392b; text-transform:uppercase; margin-bottom:1rem;">
+    Payment Failed
+  </p>
+  <h1 style="font-size:26px; font-weight:500; margin-bottom:0.75rem;">Something went wrong</h1>
+  <p class="text-muted" style="margin-bottom:2rem; line-height:1.7;">
+    Your payment could not be completed or your reservation expired.
+    Your slot has been released. Please try again.
+  </p>
+  <a href="{% url 'homepage' %}" class="btn btn-gold"
+     style="display:inline-block; width:auto; padding:13px 32px;">
+    Back to Events
+  </a>
+</div>
+{% endblock %}

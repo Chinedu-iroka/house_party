@@ -71,12 +71,14 @@
       </div>
 
       {% if tier_data.is_sold_out %}
-        <button class="btn btn-outline" disabled style="opacity:0.4; cursor:not-allowed;">
-          Sold Out
-        </button>
-      {% else %}
-        <a href="#" class="btn btn-gold">Register for {{ tier_data.tier.name }}</a>
-      {% endif %}
+  <button class="btn btn-outline" disabled style="opacity:0.4; cursor:not-allowed;">
+    Sold Out
+  </button>
+{% else %}
+  <a href="{% url 'register' event.id tier_data.tier.id %}" class="btn btn-gold">
+    Register for {{ tier_data.tier.name }}
+  </a>
+{% endif %}
     </div>
     {% endfor %}
 
